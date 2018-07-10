@@ -27,13 +27,13 @@ stages{
             parallel{
                 stage ('Deploy to Staging'){
                     steps {
-                        sh "cp **/target/*.war /var/lib/tomcat-staging/webapps"
+                        sh "cp **/target/*.war /home/user/tomcat-staging/webapps"
                     }
                 }
 
                 stage ("Deploy to Production"){
                     steps {
-                        sh "cp **/target/*.war /var/lib/tomcat-production/webapps"
+                        sh "cp **/target/*.war /home/user/tomcat-production/webapps"
                     }
                 }
             }
