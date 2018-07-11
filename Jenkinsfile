@@ -1,16 +1,11 @@
 pipeline {
     agent any
-    
-    parameters { 
-         string(name: 'tomcat_staging', defaultValue: 'localhost', description: 'Staging Server')
-         string(name: 'tomcat_prod', defaultValue: 'localhost', description: 'Production Server')
-    } 
 
     triggers {
-         pollSCM('* * * * *') // Polling Source Control
+         pollSCM('* * * * *')
      }
-
-stages{
+     
+    stages{
         stage('Build'){
             steps {
                 sh 'mvn clean package'
@@ -22,21 +17,49 @@ stages{
                 }
             }
         }
+        stage ('Deploy to Dev'){
+            steps {
+                build job: 'deploy-to-dev'
+            }
+        }
 
-        stage ('Deployments'){
-            parallel{
-                stage ('Deploy to Staging'){
-                    steps {
-                        sh "cp **/target/*.war /home/user/tomcat-staging/webapps"
-                    }
+        stage ('Deploy to QA'){
+            steps{
+                timeout(time:5, unit:'DAYS'){
+                    input message:'Approve QA Deployment?'
                 }
 
-                stage ("Deploy to Production"){
-                    steps {
-                        sh "cp **/target/*.war /home/user/tomcat-production/webapps"
-                    }
+                build job: 'deploy-to-qa'
+            }
+            post {
+                success {
+                    echo 'Code deployed to QA ENV.'
+                }
+
+                failure {
+                    echo ' Deployment failed.'
                 }
             }
         }
+
+        stage ('Deploy to PROD'){
+            steps{
+                timeout(time:5, unit:'DAYS'){
+                    input message:'Approve PROD Deployment?'
+                }
+
+                build job: 'deploy-to-prod'
+            }
+            post {
+                success {
+                    echo 'Code deployed to PROD ENV.'
+                }
+
+                failure {
+                    echo ' Deployment failed.'
+                }
+            }
+        }
+
     }
 }
