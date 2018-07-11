@@ -15,7 +15,7 @@ pipeline {
         }
         stage ('Deploy to Dev'){
             steps {
-                build job: 'deploy-to-dev'
+                build job: 'pipeline-deploy-to-dev'
             }
         }
 
@@ -25,7 +25,7 @@ pipeline {
                     input message:'Approve QA Deployment?'
                 }
 
-                build job: 'deploy-to-qa'
+                build job: 'pipeline-deploy-to-qa'
             }
             post {
                 success {
@@ -44,7 +44,7 @@ pipeline {
                     input message:'Approve PROD Deployment?'
                 }
 
-                build job: 'deploy-to-prod'
+                build job: 'pipeline-deploy-to-prod'
             }
             post {
                 success {
