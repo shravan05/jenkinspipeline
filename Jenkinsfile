@@ -13,7 +13,20 @@ pipeline {
                 }
             }
         }
-        stage ('Deploy to Dev'){
+        
+	stage('pull artifact'){
+            steps {
+                step([  $class: 'CopyArtifact',
+                        filter: '**/target/*.war',
+                        fingerprintArtifacts: true,
+                        projectName: 'pipeline-deploy-to-dev','pipeline-deploy-to-qa','pipeline-deploy-to-prod' 
+                ])
+                
+            }
+        }
+	
+
+	stage ('Deploy to Dev'){
             steps {
                 build job: 'pipeline-deploy-to-dev'
             }
