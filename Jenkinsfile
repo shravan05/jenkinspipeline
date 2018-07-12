@@ -3,7 +3,8 @@ pipeline {
 
     stages{
         stage('Build'){
-            steps {
+            agent { Node1 }
+	    steps {
                 sh 'mvn clean package'
             }
             post {
