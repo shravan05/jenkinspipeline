@@ -18,5 +18,23 @@ pipeline {
                 build job: 'pipeline-deploy-to-dev'
             }
         }
+        stage ('Deploy to QA'){
+            steps{
+                timeout(time:5, unit:'DAYS'){
+                    input message:'Approve QA Deployment?'
+                }
+
+                build job: 'pipeline-deploy-to-qa'
+            }
+            post {
+                success {
+                    echo 'Code deployed to QA ENV.'
+                }
+
+                failure {
+                    echo ' Deployment failed.'
+                }
+            }
+        }
     }
 }
