@@ -1,6 +1,9 @@
 pipeline {
     agent any
-
+    
+    triggers {
+         pollSCM('* * * * *')
+     }
     stages{
         stage('Build'){
             steps {
@@ -19,7 +22,8 @@ pipeline {
                 step([  $class: 'CopyArtifact',
                         filter: '**/target/*.war',
                         fingerprintArtifacts: true,
-                        projectName: 'pipeline-deploy-to-dev','pipeline-deploy-to-qa','pipeline-deploy-to-prod' 
+                        projectName: '${JOB_NAME}',
+			selector: [$class: 'SpecificBuildSelector', buildNumber: '${BUILD_NUMBER}'] 
                 ])
                 
             }
